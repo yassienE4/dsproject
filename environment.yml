@@ -1,0 +1,8 @@
+name: uni-env
+channels:
+  - defaults
+dependencies:
+  - python=3.13.1
+  - ipykernel
+  - notebook
+prefix: /opt/anaconda3/envs/uni-env
