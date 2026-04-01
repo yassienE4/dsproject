@@ -1,17 +1,16 @@
 from fastapi import FastAPI
+from feature_extraction import extract_features
 import joblib
 import pandas as pd
 
 app = FastAPI()
 
-model = joblib.load("model/random_forest_model.pkl")
+model = joblib.load("best_model.joblib")
 
 @app.post("/predict")
 def predict(url: str):
-    # simple placeholder (use your real feature extraction)
-    features = {
-        "url_length": len(url)
-    }
+
+    features = extract_features(url)
     
     df = pd.DataFrame([features])
     pred = model.predict(df)[0]
