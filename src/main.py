@@ -12,14 +12,15 @@ class URLRequest(BaseModel):
 app = FastAPI()
 
 model = joblib.load("../models/best_model.joblib")
+scaler = joblib.load("../models/scaler.joblib")
+numerical_cols = joblib.load("../models/numerical_cols.joblib")
 
 @app.post("/predict")
 def predict(request: URLRequest):
     features = extract_features(request.url)
     
     df = pd.DataFrame([features])
+    df = df[model.feature_names_in_]
+    df[numerical_cols] = scaler.transform(df[numerical_cols])
     pred = model.predict(df)[0]
-    print(extract_features("https://google.com"))
-    print(extract_features("https://facebook.com"))
-    print(extract_features("http://very-bad-phishing-site123.biz/login"))
     return {"prediction": number_to_type(pred)}
