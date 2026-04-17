@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>URL Threat Sentinel</title>
+  <meta name="description" content="Classify URLs as benign, defacement, malware, or phishing and inspect the model's evaluation visuals.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="background-orb orb-one"></div>
+  <div class="background-orb orb-two"></div>
+
+  <main class="shell">
+    <header class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow">FastAPI prediction console</div>
+        <h1>URL Threat Sentinel</h1>
+        <p class="lead">
+          Enter a URL and the tuned Random Forest model will classify it as benign, defacement, malware, or phishing.
+          The dashboard also surfaces the notebook visuals that explain how the model behaves.
+        </p>
+
+        <form id="predictionForm" class="predict-form" autocomplete="off">
+          <label class="sr-only" for="urlInput">URL</label>
+          <input
+            id="urlInput"
+            name="url"
+            type="text"
+            placeholder="example.com/login or https://secure-paypal.example"
+            spellcheck="false"
+            required
+          >
+          <button type="submit" class="primary-btn">Classify URL</button>
+        </form>
+
+        <div class="sample-row" aria-label="Sample URLs">
+          <button class="sample-chip" type="button" data-url="http:://espn.go.com/nba/player/_/id/3457/brandon-rush">Benign example</button>
+          <button class="sample-chip" type="button" data-url="https://allegro.pl-oferta41142113151202981.sbs">Phishing example</button>
+          <button class="sample-chip" type="button" data-url="http://59.184.247.189:54682/i">Malware example</button>
+          <button class="sample-chip" type="button" data-url="http://www.pashminaonline.com/pure-pashminas">Defacement Example</button>
+        </div>
+      </div>
+
+      <aside class="result-panel">
+        <div class="result-label">Prediction</div>
+        <div id="predictionBadge" class="prediction-badge neutral">Awaiting input</div>
+        <p id="predictionMessage" class="result-message">
+          The API will return a single class label after feature extraction and model inference.
+        </p>
+
+        <div class="mini-metrics">
+          <div class="mini-metric">
+            <span>Weighted F1</span>
+            <strong>85.83%</strong>
+          </div>
+          <div class="mini-metric">
+            <span>Accuracy</span>
+            <strong>85.91%</strong>
+          </div>
+          <div class="mini-metric">
+            <span>Minority recall</span>
+            <strong>0.78</strong>
+          </div>
+        </div>
+      </aside>
+    </header>
+
+    <section class="stats-grid" aria-label="Model summary">
+      <article class="stat-card accent">
+        <span class="stat-label">Approved model</span>
+        <strong>Random Forest (Tuned)</strong>
+        <p>Chosen in the evaluation notebook as the best deployment candidate.</p>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Classes</span>
+        <strong>4-way classification</strong>
+        <p>benign, defacement, malware, and phishing.</p>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Recall gap</span>
+        <strong>One minority class</strong>
+        <p>Strong overall performance with a known recall tradeoff on one class.</p>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Feature signals</span>
+        <strong>Lexical + structural</strong>
+        <p>Length, subdomains, digits, entropy, suspicious words, and related signals.</p>
+      </article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel panel-wide">
+        <div class="panel-heading">
+          <div>
+            <span class="section-kicker">Evaluation visual</span>
+            <h2>Confusion matrix from the notebooks</h2>
+          </div>
+          <p>
+            The matrix below mirrors the tuned model output from Phase 4 and highlights where the classifier is strong and where the remaining errors sit.
+          </p>
+        </div>
+
+        <div class="matrix-wrap">
+          <div class="axis-label axis-top">Predicted class</div>
+          <div class="matrix-shell">
+            <div class="axis-label axis-left">Actual class</div>
+            <div id="confusionMatrix" class="confusion-matrix" aria-label="Confusion matrix"></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading compact">
+          <div>
+            <span class="section-kicker">Error profile</span>
+            <h2>Per-class miss rate</h2>
+          </div>
+        </div>
+        <div id="errorProfile" class="bar-stack"></div>
+      </article>
+
+      <article class="panel panel-wide">
+        <div class="panel-heading compact">
+          <div>
+            <span class="section-kicker">Notebook summary</span>
+            <h2>What the evaluation says</h2>
+          </div>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-card">
+            <span>Business criteria</span>
+            <strong>2 pass, 1 partial</strong>
+            <p>High detection quality with a small recall tradeoff on a minority class.</p>
+          </div>
+          <div class="summary-card">
+            <span>Technical criteria</span>
+            <strong>Accuracy target met</strong>
+            <p>Accuracy and weighted F1 clear the 0.85 threshold in Phase 5.</p>
+          </div>
+          <div class="summary-card wide">
+            <span>Assessment</span>
+            <p>
+              The tuned Random Forest is suitable for deployment with minor limitations, which is why the frontend promotes it as the active production model.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading compact">
+          <div>
+            <span class="section-kicker">Feature view</span>
+            <h2>Extracted signals</h2>
+          </div>
+        </div>
+        <div class="feature-tags">
+          <span>url_length</span>
+          <span>domain_length</span>
+          <span>path_length</span>
+          <span>num_dots</span>
+          <span>num_subdomains</span>
+          <span>num_digits</span>
+          <span>has_dash</span>
+          <span>has_ip</span>
+          <span>has_at</span>
+          <span>has_suspicious_words</span>
+          <span>is_suspicious_tld</span>
+          <span>url_entropy</span>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
