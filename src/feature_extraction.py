@@ -16,6 +16,7 @@ def entropy(s):
     return -sum(p * math.log2(p) for p in probs)
 
 def extract_features(url):
+    url = normalize_url(url)
     parsed = urlparse(url)
     domain = parsed.netloc.lower()
     path = parsed.path.lower()
@@ -47,3 +48,9 @@ def extract_features(url):
         # Complexity
         "url_entropy": entropy(url),
     }
+
+
+def normalize_url(url):
+    if not url.startswith(("http://", "https://")):
+        return "http://" + url
+    return url

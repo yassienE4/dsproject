@@ -1,8 +1,13 @@
-from fastapi import FastAPI
-from feature_extraction import extract_features
+from pathlib import Path
+
 import joblib
 import pandas as pd
-from mapping import number_to_type, type_to_number
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+
+from feature_extraction import extract_features
+from mapping import number_to_type
 
 from pydantic import BaseModel
 
@@ -11,9 +16,19 @@ class URLRequest(BaseModel):
 
 app = FastAPI()
 
-model = joblib.load("../models/best_model.joblib")
-scaler = joblib.load("../models/scaler.joblib")
-numerical_cols = joblib.load("../models/numerical_cols.joblib")
+BASE_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = Path(__file__).resolve().parent / "frontend"
+
+model = joblib.load(BASE_DIR / "models" / "best_model.joblib")
+scaler = joblib.load(BASE_DIR / "models" / "scaler.joblib")
+numerical_cols = joblib.load(BASE_DIR / "models" / "numerical_cols.joblib")
+
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+
+
+@app.get("/")
+def home():
+    return FileResponse(FRONTEND_DIR / "index.html")
 
 @app.post("/predict")
 def predict(request: URLRequest):
