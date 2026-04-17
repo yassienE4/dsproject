@@ -5,4 +5,10 @@ dependencies:
   - python=3.13.1
   - ipykernel
   - notebook
+  - scipy
+  - statsmodels
+  - seaborn
+  - fastapi
+  - uvicorn
+  - matplotlib
 prefix: /opt/anaconda3/envs/uni-env
